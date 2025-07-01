@@ -88,11 +88,26 @@
     }
     @media (max-width: 768px) {
       .mobile-menu {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background: white;
+        z-index: 40;
         transform: translateX(100%);
         transition: transform 0.3s ease-out;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
       }
       .mobile-menu.open {
         transform: translateX(0);
+      }
+      .mobile-menu a {
+        font-size: 1.5rem;
+        margin: 1rem 0;
       }
     }
   </style>
@@ -102,19 +117,24 @@
   <!-- Mobile Menu Button -->
   <div class="md:hidden fixed top-4 right-4 z-50">
     <button id="menu-toggle" class="text-gold-600 focus:outline-none">
-      <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg id="menu-icon" class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+      </svg>
+      <svg id="close-icon" class="w-8 h-8 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
       </svg>
     </button>
   </div>
 
   <!-- Mobile Menu -->
-  <div id="mobile-menu" class="mobile-menu fixed inset-0 bg-white z-40 flex flex-col items-center justify-center space-y-8 md:hidden">
-    <button id="menu-close" class="absolute top-6 right-6 text-gold-600">
-      <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-      </svg>
-    </button>
+  <div id="mobile-menu" class="mobile-menu">
+    <div class="absolute top-6 right-6">
+      <button id="menu-close" class="text-gold-600">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
     <a href="#sobre" class="text-2xl font-medium text-gray-800 menu-item">Sobre</a>
     <a href="#servicos" class="text-2xl font-medium text-gray-800 menu-item">Serviços</a>
     <a href="#depoimentos" class="text-2xl font-medium text-gray-800 menu-item">Depoimentos</a>
@@ -157,7 +177,7 @@
     
     <div class="max-w-7xl mx-auto relative z-20 px-4 md:px-8">
       <div class="grid md:grid-cols-2 gap-12 items-center">
-        <div class="text-center md:text-left animate-fade-in">
+        <div class="text-center md:text-left animate-fade-in order-2 md:order-1">
           <h2 class="text-4xl md:text-5xl lg:text-6xl font-bold font-cormorant mb-4 leading-tight">
             <span class="gold-gradient-text">Nutrição Clinica</span><br>
             <span class="text-gray-800">Esportiva & Estética</span>
@@ -175,12 +195,12 @@
           </div>
         </div>
         
-        <div class="relative animate-float hidden md:block">
-          <div class="relative w-full h-96">
-            <div class="absolute w-64 h-64 bg-gold-100 rounded-full top-0 left-1/2 transform -translate-x-1/2"></div>
-            <img src="img/helena-perfil.jpg" alt="Dra. Helena Gomes" class="absolute w-64 h-64 rounded-full object-cover border-4 border-white shadow-2xl top-0 left-1/2 transform -translate-x-1/2">
-            <div class="absolute w-48 h-48 bg-gold-200 rounded-full opacity-50 bottom-8 left-8"></div>
-            <div class="absolute w-32 h-32 bg-gold-300 rounded-full opacity-30 bottom-0 right-8"></div>
+        <div class="relative animate-float order-1 md:order-2 mb-12 md:mb-0">
+          <div class="flex justify-center">
+            <div class="relative w-64 h-64">
+              <div class="absolute w-full h-full bg-gold-100 rounded-full"></div>
+              <img src="img/helena-perfil.jpg" alt="Dra. Helena Gomes" class="absolute w-full h-full rounded-full object-cover border-4 border-white shadow-2xl">
+            </div>
           </div>
         </div>
       </div>
@@ -615,21 +635,23 @@
     </div>
   </footer>
 
-  <script>
+   <script>
     // Mobile menu toggle
     const menuToggle = document.getElementById('menu-toggle');
     const menuClose = document.getElementById('menu-close');
     const mobileMenu = document.getElementById('mobile-menu');
+    const menuIcon = document.getElementById('menu-icon');
+    const closeIcon = document.getElementById('close-icon');
     
-    menuToggle.addEventListener('click', () => {
-      mobileMenu.classList.add('open');
-      document.body.style.overflow = 'hidden';
-    });
+    function toggleMenu() {
+      const isOpen = mobileMenu.classList.toggle('open');
+      document.body.style.overflow = isOpen ? 'hidden' : '';
+      menuIcon.classList.toggle('hidden', isOpen);
+      closeIcon.classList.toggle('hidden', !isOpen);
+    }
     
-    menuClose.addEventListener('click', () => {
-      mobileMenu.classList.remove('open');
-      document.body.style.overflow = '';
-    });
+    menuToggle.addEventListener('click', toggleMenu);
+    menuClose.addEventListener('click', toggleMenu);
     
     // Close menu when clicking on a link
     const menuLinks = document.querySelectorAll('#mobile-menu a');
@@ -637,6 +659,8 @@
       link.addEventListener('click', () => {
         mobileMenu.classList.remove('open');
         document.body.style.overflow = '';
+        menuIcon.classList.remove('hidden');
+        closeIcon.classList.add('hidden');
       });
     });
     
@@ -667,5 +691,6 @@
       }
     });
   </script>
+  
 </body>
 </html>
